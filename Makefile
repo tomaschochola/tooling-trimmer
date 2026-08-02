@@ -29,16 +29,19 @@ never:
 # Goals
 
 .PHONY: fix
-fix: eslint_fix prettier_fix
+fix: eslint_fix prettier_fix trimmer_fix
 
 .PHONY: check
-check: lint audit
+check: trimmer_check lint test audit
 
 .PHONY: lint
 lint: eslint_check prettier_check
 
 .PHONY: audit
 audit: npm_audit
+
+.PHONY: test
+test: node_test
 
 .PHONY: deps_install
 deps_install: npm_install
@@ -59,28 +62,40 @@ distclean: clean deps_clean
 .PHONY: nuke
 nuke: distclean data_reset
 
+.PHONY: trimmer_fix
+trimmer_fix: ./node_modules ./package.json ./npm-shrinkwrap.json ./src/cli.js
+	node ./src/cli.js fix .
+
+.PHONY: trimmer_check
+trimmer_check: ./node_modules ./package.json ./npm-shrinkwrap.json ./src/cli.js
+	node ./src/cli.js check .
+
 .PHONY: eslint_fix
-eslint_fix: ./node_modules ./package.json ./package-lock.json ./eslint.config.js
+eslint_fix: ./node_modules ./package.json ./npm-shrinkwrap.json ./eslint.config.js
 	npm exec --ignore-scripts -- eslint --concurrency=auto --fix .
 
 .PHONY: prettier_fix
-prettier_fix: ./node_modules ./package.json ./package-lock.json ./prettier.config.js
+prettier_fix: ./node_modules ./package.json ./npm-shrinkwrap.json ./prettier.config.js
 	npm exec --ignore-scripts -- prettier -w .
 
 .PHONY: eslint_check
-eslint_check: ./node_modules ./package.json ./package-lock.json ./eslint.config.js
+eslint_check: ./node_modules ./package.json ./npm-shrinkwrap.json ./eslint.config.js
 	npm exec --ignore-scripts -- eslint --concurrency=auto .
 
 .PHONY: prettier_check
-prettier_check: ./node_modules ./package.json ./package-lock.json ./prettier.config.js
+prettier_check: ./node_modules ./package.json ./npm-shrinkwrap.json ./prettier.config.js
 	npm exec --ignore-scripts -- prettier -c .
 
+.PHONY: node_test
+node_test: ./node_modules ./package.json ./npm-shrinkwrap.json
+	node --test
+
 .PHONY: npm_audit
-npm_audit: ./node_modules ./package.json ./package-lock.json
+npm_audit: ./node_modules ./package.json ./npm-shrinkwrap.json
 	npm audit --ignore-scripts --audit-level=critical --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: npm_install
-npm_install: ./package.json ./package-lock.json
+npm_install: ./package.json ./npm-shrinkwrap.json
 	npm ci --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: npm_update
@@ -132,5 +147,5 @@ data_reset: down
 
 # Dependencies
 
-./node_modules: ./package.json ./package-lock.json
+./node_modules: ./package.json ./npm-shrinkwrap.json
 	${MAKE} npm_install
