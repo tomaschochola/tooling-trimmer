@@ -4,6 +4,9 @@
     "name": "Tomáš Chochola",
     "url": "https://github.com/tomaschochola"
   },
+  "bin": {
+    "trimmer": "./src/cli.js"
+  },
   "bugs": {
     "email": "tomaschochola@tomaschochola.cz",
     "url": "https://github.com/tomaschochola/tooling-trimmer/issues"
@@ -15,9 +18,6 @@
       "url": "https://github.com/tomaschochola"
     }
   ],
-  "bin": {
-    "trimmer": "./src/cli.js"
-  },
   "dependencies": {
     "editorconfig": "3.0.2"
   },
@@ -26,18 +26,13 @@
     "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#1.x",
     "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#1.x"
   },
-  "engines": {
-    "node": ">=24.11.0 <25.0.0",
-    "npm": ">=11.0.0 <12.0.0"
-  },
+  "files": [
+    "src"
+  ],
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tomaschochola"
   },
-  "files": [
-    "npm-shrinkwrap.json",
-    "src"
-  ],
   "homepage": "https://github.com/tomaschochola/tooling-trimmer",
   "keywords": [
     "tomaschochola",
@@ -52,7 +47,6 @@
   ],
   "license": "CC-BY-ND-4.0",
   "name": "@tomaschochola/tooling-trimmer",
-  "packageManager": "npm@11.16.0",
   "private": true,
   "repository": "github:tomaschochola/tooling-trimmer",
   "sideEffects": [
