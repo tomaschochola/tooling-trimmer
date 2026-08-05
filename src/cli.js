@@ -295,24 +295,36 @@ const detectBom = (value) => {
 const matchesBom = (configuredCharset, bomCharset) => configuredCharset === bomCharset
   || (configuredCharset === 'utf-8-bom' && bomCharset === 'utf-8');
 
-const decodeText = (value, configuredCharset, file) => {
-  let charset = configuredCharset;
-  let bom = Buffer.alloc(0);
-  let content = value;
-
+const extractBom = (value, configuredCharset, file) => {
   const detectedBom = detectBom(value);
 
-  if (detectedBom !== undefined) {
-    if (charset !== undefined && !matchesBom(charset, detectedBom.charset)) {
-      throw new CliError(
-        `${JSON.stringify(file)} has a ${detectedBom.charset} BOM that conflicts with charset ${charset}`,
-      );
-    }
-
-    charset ??= detectedBom.charset;
-    bom = detectedBom.bom;
-    content = value.subarray(detectedBom.bom.length);
+  if (detectedBom === undefined) {
+    return {
+      bom: Buffer.alloc(0),
+      charset: configuredCharset,
+      content: value,
+    };
   }
+
+  if (configuredCharset !== undefined && !matchesBom(configuredCharset, detectedBom.charset)) {
+    throw new CliError(
+      `${JSON.stringify(file)} has a ${detectedBom.charset} BOM that conflicts with charset ${configuredCharset}`,
+    );
+  }
+
+  return {
+    bom: detectedBom.bom,
+    charset: configuredCharset ?? detectedBom.charset,
+    content: value.subarray(detectedBom.bom.length),
+  };
+};
+
+const decodeText = (value, configuredCharset, file) => {
+  const decoded = extractBom(value, configuredCharset, file);
+
+  let { bom } = decoded;
+
+  const { charset, content } = decoded;
 
   if (configuredCharset === 'utf-8-bom') {
     bom = UTF8_BOM;
