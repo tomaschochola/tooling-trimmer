@@ -255,6 +255,66 @@ test('honors an explicit Git text attribute for UTF-16 text', async (context) =>
   );
 });
 
+test('enforces supported text encodings while normalizing their content', async (context) => {
+  const repository = await createRepository(context);
+  const utf8Bom = Buffer.from([0xef, 0xbb, 0xbf]);
+
+  await put(
+    repository,
+    '.editorconfig',
+    'root = true\n[*]\nend_of_line = lf\ninsert_final_newline = true\ntrim_trailing_whitespace = true\n[*.latin1]\ncharset = latin1\n[*.utf8]\ncharset = utf-8\n[*.utf8bom]\ncharset = utf-8-bom\n[*.utf16be]\ncharset = utf-16be\n',
+  );
+  await put(repository, '.gitattributes', '* text eol=lf\n');
+  await put(
+    repository,
+    'file.latin1',
+    Buffer.from([0x63, 0x61, 0x66, 0xe9, 0x20, 0x20, 0x0d, 0x0a]),
+  );
+  await put(
+    repository,
+    'file.utf8',
+    Buffer.concat([utf8Bom, Buffer.from('value  \r\n\r\n')]),
+  );
+  await put(
+    repository,
+    'file.utf8bom',
+    Buffer.from('value  \r\n\r\n'),
+  );
+  await put(
+    repository,
+    'file.utf16be',
+    Buffer.from('feff00760061006c0075006500200020000d000a000d000a', 'hex'),
+  );
+  await add(repository, [
+    '.editorconfig',
+    '.gitattributes',
+    'file.latin1',
+    'file.utf8',
+    'file.utf8bom',
+    'file.utf16be',
+  ]);
+
+  const result = await runFix(repository);
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.deepEqual(
+    await readFile(join(repository, 'file.latin1')),
+    Buffer.from([0x63, 0x61, 0x66, 0xe9, 0x0a]),
+  );
+  assert.deepEqual(
+    await readFile(join(repository, 'file.utf8')),
+    Buffer.from('value\n'),
+  );
+  assert.deepEqual(
+    await readFile(join(repository, 'file.utf8bom')),
+    Buffer.concat([utf8Bom, Buffer.from('value\n')]),
+  );
+  assert.deepEqual(
+    await readFile(join(repository, 'file.utf16be')),
+    Buffer.from('feff00760061006c00750065000a', 'hex'),
+  );
+});
+
 test('handles Git file names containing tabs and line breaks', async (context) => {
   const repository = await createRepository(context);
   const file = 'odd\tname\n.txt';

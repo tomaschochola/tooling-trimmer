@@ -314,6 +314,12 @@ const decodeText = (value, configuredCharset, file) => {
     content = value.subarray(detectedBom.bom.length);
   }
 
+  if (configuredCharset === 'utf-8-bom') {
+    bom = UTF8_BOM;
+  } else if (configuredCharset === 'utf-8') {
+    bom = Buffer.alloc(0);
+  }
+
   if (charset === 'latin1') {
     return {
       bom,

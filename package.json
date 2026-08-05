@@ -5,7 +5,7 @@
     "url": "https://github.com/tomaschochola"
   },
   "bin": {
-    "trimmer": "./src/cli.js"
+    "trimmer": "src/cli.js"
   },
   "bugs": {
     "email": "tomaschochola@tomaschochola.cz",
@@ -21,11 +21,12 @@
   "dependencies": {
     "editorconfig": "3.0.2"
   },
-  "description": "Git-aware EditorConfig whitespace and line-ending normalizer",
+  "description": "Git-aware EditorConfig whitespace and line-ending normalizer.",
   "devDependencies": {
-    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#1.x",
-    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#1.x"
+    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#2.x",
+    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#2.x"
   },
+  "exports": {},
   "files": [
     "src"
   ],
@@ -48,10 +49,10 @@
   "license": "CC-BY-ND-4.0",
   "name": "@tomaschochola/tooling-trimmer",
   "private": true,
-  "repository": "github:tomaschochola/tooling-trimmer",
-  "sideEffects": [
-    "./src/cli.js"
-  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomaschochola/tooling-trimmer.git"
+  },
   "type": "module",
   "version": "2.0.0"
 }
