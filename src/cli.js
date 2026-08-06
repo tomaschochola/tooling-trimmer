@@ -14,15 +14,7 @@
 
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import {
-  chmod,
-  lstat,
-  open,
-  readFile,
-  realpath,
-  rename,
-  unlink,
-} from 'node:fs/promises';
+import { chmod, lstat, open, readFile, realpath, rename, unlink } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { TextDecoder } from 'node:util';
@@ -41,36 +33,35 @@ class CliError extends Error {
   }
 }
 
-const run = (command, arguments_) => new Promise((resolvePromise, rejectPromise) => {
-  const child = spawn(command, arguments_, {
-    stdio: ['ignore', 'pipe', 'pipe'],
+const run = (command, arguments_) =>
+  new Promise((resolvePromise, rejectPromise) => {
+    const child = spawn(command, arguments_, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    const standardOutput = [];
+    const standardError = [];
+
+    child.stdout.on('data', (chunk) => standardOutput.push(chunk));
+    child.stderr.on('data', (chunk) => standardError.push(chunk));
+    child.on('error', rejectPromise);
+    child.on('close', (exitCode, signal) => {
+      const output = Buffer.concat(standardOutput);
+      const errorOutput = Buffer.concat(standardError);
+
+      if (exitCode === 0) {
+        resolvePromise(output);
+
+        return;
+      }
+
+      const reason = errorOutput.toString('utf8').trim();
+      const status = signal === null ? `exit code ${exitCode}` : `signal ${signal}`;
+      const detail = reason === '' ? '' : `: ${JSON.stringify(reason)}`;
+
+      rejectPromise(new CliError(`${command} failed with ${status}${detail}`));
+    });
   });
-
-  const standardOutput = [];
-  const standardError = [];
-
-  child.stdout.on('data', (chunk) => standardOutput.push(chunk));
-  child.stderr.on('data', (chunk) => standardError.push(chunk));
-  child.on('error', rejectPromise);
-  child.on('close', (exitCode, signal) => {
-    const output = Buffer.concat(standardOutput);
-    const errorOutput = Buffer.concat(standardError);
-
-    if (exitCode === 0) {
-      resolvePromise(output);
-
-      return;
-    }
-
-    const reason = errorOutput.toString('utf8').trim();
-    const status = signal === null ? `exit code ${exitCode}` : `signal ${signal}`;
-    const detail = reason === '' ? '' : `: ${JSON.stringify(reason)}`;
-
-    rejectPromise(
-      new CliError(`${command} failed with ${status}${detail}`),
-    );
-  });
-});
 
 const runGit = (directory, arguments_) => run('git', ['-C', directory, ...arguments_]);
 
@@ -98,9 +89,7 @@ const findRepository = async (directory) => {
   try {
     canonicalDirectory = await realpath(resolve(directory));
   } catch (error) {
-    throw new CliError(
-      `Cannot access directory ${JSON.stringify(directory)}: ${error.message}`,
-    );
+    throw new CliError(`Cannot access directory ${JSON.stringify(directory)}: ${error.message}`);
   }
 
   let directoryStatus;
@@ -108,23 +97,16 @@ const findRepository = async (directory) => {
   try {
     directoryStatus = await lstat(canonicalDirectory);
   } catch (error) {
-    throw new CliError(
-      `Cannot inspect directory ${JSON.stringify(directory)}: ${error.message}`,
-    );
+    throw new CliError(`Cannot inspect directory ${JSON.stringify(directory)}: ${error.message}`);
   }
 
   if (!directoryStatus.isDirectory()) {
     throw new CliError(`${JSON.stringify(directory)} is not a directory`);
   }
 
-  const repositoryOutput = await runGit(canonicalDirectory, [
-    'rev-parse',
-    '--show-toplevel',
-  ]);
+  const repositoryOutput = await runGit(canonicalDirectory, ['rev-parse', '--show-toplevel']);
 
-  const repository = await realpath(
-    decodeUtf8(trimFinalLineBreak(repositoryOutput), 'Git repository path'),
-  );
+  const repository = await realpath(decodeUtf8(trimFinalLineBreak(repositoryOutput), 'Git repository path'));
 
   const scope = relative(repository, canonicalDirectory);
 
@@ -177,13 +159,11 @@ const parseGitEntries = (output) => {
       .split(/\s+/u)
       .filter((attribute) => attribute !== '');
 
-    const attributeEndOfLine = attributes
-      .find((attribute) => attribute === 'eol=lf' || attribute === 'eol=crlf')
-      ?.slice('eol='.length);
+    const attributeEndOfLine = attributes.find((attribute) => attribute === 'eol=lf' || attribute === 'eol=crlf')?.slice('eol='.length);
 
     const explicitlyBinary = attributes.includes('-text');
     const explicitlyText = attributes.includes('text');
-    const detectedBinary = (/(?:^|\s)w\/-text(?:\s|$)/u).test(metadata);
+    const detectedBinary = /(?:^|\s)w\/-text(?:\s|$)/u.test(metadata);
 
     entries.push({
       attributeEndOfLine,
@@ -196,15 +176,7 @@ const parseGitEntries = (output) => {
 };
 
 const listGitEntries = async ({ repository, scope }) => {
-  const arguments_ = [
-    'ls-files',
-    '--cached',
-    '--others',
-    '--exclude-standard',
-    '--full-name',
-    '--eol',
-    '-z',
-  ];
+  const arguments_ = ['ls-files', '--cached', '--others', '--exclude-standard', '--full-name', '--eol', '-z'];
 
   if (scope !== '') {
     arguments_.push('--', `:(literal)${scope}`);
@@ -226,9 +198,7 @@ const parseBoolean = (value, property, file) => {
     return false;
   }
 
-  throw new CliError(
-    `Invalid ${property} value for ${JSON.stringify(file)}: ${JSON.stringify(value)}`,
-  );
+  throw new CliError(`Invalid ${property} value for ${JSON.stringify(file)}: ${JSON.stringify(value)}`);
 };
 
 const parseEndOfLine = (value, file) => {
@@ -240,9 +210,7 @@ const parseEndOfLine = (value, file) => {
     return value;
   }
 
-  throw new CliError(
-    `Invalid end_of_line value for ${JSON.stringify(file)}: ${JSON.stringify(value)}`,
-  );
+  throw new CliError(`Invalid end_of_line value for ${JSON.stringify(file)}: ${JSON.stringify(value)}`);
 };
 
 const parseCharset = (value, file) => {
@@ -250,19 +218,11 @@ const parseCharset = (value, file) => {
     return undefined;
   }
 
-  if (
-    value === 'latin1'
-    || value === 'utf-8'
-    || value === 'utf-8-bom'
-    || value === 'utf-16be'
-    || value === 'utf-16le'
-  ) {
+  if (value === 'latin1' || value === 'utf-8' || value === 'utf-8-bom' || value === 'utf-16be' || value === 'utf-16le') {
     return value;
   }
 
-  throw new CliError(
-    `Unsupported charset for ${JSON.stringify(file)}: ${JSON.stringify(value)}`,
-  );
+  throw new CliError(`Unsupported charset for ${JSON.stringify(file)}: ${JSON.stringify(value)}`);
 };
 
 const startsWith = (value, prefix) => value.length >= prefix.length && value.subarray(0, prefix.length).equals(prefix);
@@ -292,8 +252,7 @@ const detectBom = (value) => {
   return undefined;
 };
 
-const matchesBom = (configuredCharset, bomCharset) => configuredCharset === bomCharset
-  || (configuredCharset === 'utf-8-bom' && bomCharset === 'utf-8');
+const matchesBom = (configuredCharset, bomCharset) => configuredCharset === bomCharset || (configuredCharset === 'utf-8-bom' && bomCharset === 'utf-8');
 
 const extractBom = (value, configuredCharset, file) => {
   const detectedBom = detectBom(value);
@@ -307,9 +266,7 @@ const extractBom = (value, configuredCharset, file) => {
   }
 
   if (configuredCharset !== undefined && !matchesBom(configuredCharset, detectedBom.charset)) {
-    throw new CliError(
-      `${JSON.stringify(file)} has a ${detectedBom.charset} BOM that conflicts with charset ${configuredCharset}`,
-    );
+    throw new CliError(`${JSON.stringify(file)} has a ${detectedBom.charset} BOM that conflicts with charset ${configuredCharset}`);
   }
 
   return {
@@ -486,21 +443,14 @@ const diagnoseLines = (lines, settings, configuredLineBreak) => {
   const expectedLineBreak = settings.endOfLine?.toUpperCase();
 
   for (const [index, line] of lines.entries()) {
-    if (
-      settings.trimTrailingWhitespace === true
-      && trailingWhitespaceStart(line.content) !== line.content.length
-    ) {
+    if (settings.trimTrailingWhitespace === true && trailingWhitespaceStart(line.content) !== line.content.length) {
       diagnostics.push({
         location: index + 1,
         message: 'trailing whitespace',
       });
     }
 
-    if (
-      configuredLineBreak !== undefined
-      && line.endOfLine !== ''
-      && line.endOfLine !== configuredLineBreak
-    ) {
+    if (configuredLineBreak !== undefined && line.endOfLine !== '' && line.endOfLine !== configuredLineBreak) {
       diagnostics.push({
         location: index + 1,
         message: `expected ${expectedLineBreak} line ending`,
@@ -555,11 +505,7 @@ const diagnoseFinalNewline = (lines, insertFinalNewline) => {
     : undefined;
 };
 
-const collapseFinalLines = (
-  lines,
-  configuredLineBreak,
-  insertFinalNewline,
-) => {
+const collapseFinalLines = (lines, configuredLineBreak, insertFinalNewline) => {
   const finalContent = findFinalContent(lines);
 
   if (finalContent === -1) {
@@ -568,9 +514,7 @@ const collapseFinalLines = (
 
   lines.length = finalContent + 1;
 
-  lines[finalContent].endOfLine = insertFinalNewline
-    ? (configuredLineBreak ?? (lines[finalContent].endOfLine || '\n'))
-    : '';
+  lines[finalContent].endOfLine = insertFinalNewline ? (configuredLineBreak ?? (lines[finalContent].endOfLine || '\n')) : '';
 
   return true;
 };
@@ -578,8 +522,7 @@ const collapseFinalLines = (
 const normalizeText = (text, settings) => {
   const lines = splitLines(text);
 
-  const configuredLineBreak
-    = settings.endOfLine === undefined ? undefined : targetLineBreak(settings.endOfLine);
+  const configuredLineBreak = settings.endOfLine === undefined ? undefined : targetLineBreak(settings.endOfLine);
 
   const diagnostics = diagnoseLines(lines, settings, configuredLineBreak);
 
@@ -587,10 +530,7 @@ const normalizeText = (text, settings) => {
     trimLineWhitespace(lines);
   }
 
-  const finalNewlineDiagnostic = diagnoseFinalNewline(
-    lines,
-    settings.insertFinalNewline,
-  );
+  const finalNewlineDiagnostic = diagnoseFinalNewline(lines, settings.insertFinalNewline);
 
   if (finalNewlineDiagnostic !== undefined) {
     diagnostics.push(finalNewlineDiagnostic);
@@ -601,13 +541,7 @@ const normalizeText = (text, settings) => {
   }
 
   if (settings.insertFinalNewline !== undefined) {
-    if (
-      !collapseFinalLines(
-        lines,
-        configuredLineBreak,
-        settings.insertFinalNewline,
-      )
-    ) {
+    if (!collapseFinalLines(lines, configuredLineBreak, settings.insertFinalNewline)) {
       return {
         diagnostics,
         text: '',
@@ -621,21 +555,13 @@ const normalizeText = (text, settings) => {
   };
 };
 
-const sameFile = (left, right) => left.dev === right.dev
-  && left.ino === right.ino
-  && left.size === right.size
-  && left.mtimeNs === right.mtimeNs
-  && left.ctimeNs === right.ctimeNs;
+const sameFile = (left, right) => left.dev === right.dev && left.ino === right.ino && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs;
 
 const resolveFile = (repository, file) => {
   const absoluteFile = resolve(repository, file);
   const relativeFile = relative(repository, absoluteFile);
 
-  if (
-    relativeFile === '..'
-    || relativeFile.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`)
-    || isAbsolute(relativeFile)
-  ) {
+  if (relativeFile === '..' || relativeFile.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`) || isAbsolute(relativeFile)) {
     throw new CliError(`Git returned an unsafe file name: ${JSON.stringify(file)}`);
   }
 
@@ -662,9 +588,7 @@ const inspectFile = async (repository, entry, configurationCache) => {
   }
 
   if ((beforeRead.mode & 0o7000n) !== 0n) {
-    throw new CliError(
-      `${JSON.stringify(entry.file)} has unsupported special permission bits`,
-    );
+    throw new CliError(`${JSON.stringify(entry.file)} has unsupported special permission bits`);
   }
 
   const [input, configuration] = await Promise.all([
@@ -681,39 +605,18 @@ const inspectFile = async (repository, entry, configurationCache) => {
     throw new CliError(`${JSON.stringify(entry.file)} changed while it was being read`);
   }
 
-  const editorConfigEndOfLine = parseEndOfLine(
-    configuration.end_of_line,
-    entry.file,
-  );
+  const editorConfigEndOfLine = parseEndOfLine(configuration.end_of_line, entry.file);
 
-  if (
-    editorConfigEndOfLine !== undefined
-    && entry.attributeEndOfLine !== undefined
-    && editorConfigEndOfLine !== entry.attributeEndOfLine
-  ) {
-    throw new CliError(
-      `Conflicting end-of-line settings for ${JSON.stringify(entry.file)}: EditorConfig requires ${editorConfigEndOfLine}, but Git attributes require ${entry.attributeEndOfLine}`,
-    );
+  if (editorConfigEndOfLine !== undefined && entry.attributeEndOfLine !== undefined && editorConfigEndOfLine !== entry.attributeEndOfLine) {
+    throw new CliError(`Conflicting end-of-line settings for ${JSON.stringify(entry.file)}: EditorConfig requires ${editorConfigEndOfLine}, but Git attributes require ${entry.attributeEndOfLine}`);
   }
 
-  const decoded = decodeText(
-    input,
-    parseCharset(configuration.charset, entry.file),
-    entry.file,
-  );
+  const decoded = decodeText(input, parseCharset(configuration.charset, entry.file), entry.file);
 
   const normalized = normalizeText(decoded.text, {
     endOfLine: editorConfigEndOfLine ?? entry.attributeEndOfLine,
-    insertFinalNewline: parseBoolean(
-      configuration.insert_final_newline,
-      'insert_final_newline',
-      entry.file,
-    ),
-    trimTrailingWhitespace: parseBoolean(
-      configuration.trim_trailing_whitespace,
-      'trim_trailing_whitespace',
-      entry.file,
-    ),
+    insertFinalNewline: parseBoolean(configuration.insert_final_newline, 'insert_final_newline', entry.file),
+    trimTrailingWhitespace: parseBoolean(configuration.trim_trailing_whitespace, 'trim_trailing_whitespace', entry.file),
   });
 
   const output = encodeText({
@@ -739,10 +642,7 @@ const replaceFile = async (plan) => {
     throw new CliError(`${JSON.stringify(plan.file)} changed before it could be written`);
   }
 
-  const temporaryFile = join(
-    dirname(plan.absoluteFile),
-    `.trimmer-${process.pid}-${randomUUID()}`,
-  );
+  const temporaryFile = join(dirname(plan.absoluteFile), `.trimmer-${process.pid}-${randomUUID()}`);
 
   let temporaryHandle;
 
@@ -775,19 +675,18 @@ const printSummary = (operation, plans, changedPlans, skipped) => {
 
 const checkPlans = (plans, changedPlans, skipped) => {
   for (const plan of changedPlans) {
-    const diagnostics = plan.diagnostics.length === 0
-      ? [
-          {
-            location: 'EOF',
-            message: 'normalization required',
-          },
-        ]
-      : plan.diagnostics;
+    const diagnostics =
+      plan.diagnostics.length === 0
+        ? [
+            {
+              location: 'EOF',
+              message: 'normalization required',
+            },
+          ]
+        : plan.diagnostics;
 
     for (const diagnostic of diagnostics) {
-      process.stdout.write(
-        `${JSON.stringify(plan.file)}:${diagnostic.location}: ${diagnostic.message}\n`,
-      );
+      process.stdout.write(`${JSON.stringify(plan.file)}:${diagnostic.location}: ${diagnostic.message}\n`);
     }
   }
 
@@ -802,9 +701,7 @@ const fixPlans = async (plans, changedPlans, skipped) => {
     process.stdout.write(`changed ${JSON.stringify(plan.file)}\n`);
   }
 
-  process.stdout.write(
-    `processed ${plans.length} text files; changed ${changedPlans.length}; skipped ${skipped.binary} binary, ${skipped['non-regular']} non-regular, ${skipped.missing} missing\n`,
-  );
+  process.stdout.write(`processed ${plans.length} text files; changed ${changedPlans.length}; skipped ${skipped.binary} binary, ${skipped['non-regular']} non-regular, ${skipped.missing} missing\n`);
 };
 
 const trimDirectory = async (mode, directory) => {
@@ -814,8 +711,8 @@ const trimDirectory = async (mode, directory) => {
   const plans = [];
 
   const skipped = {
-    'binary': 0,
-    'missing': 0,
+    binary: 0,
+    missing: 0,
     'non-regular': 0,
   };
 
@@ -826,11 +723,7 @@ const trimDirectory = async (mode, directory) => {
       continue;
     }
 
-    const plan = await inspectFile(
-      repository.repository,
-      entry,
-      configurationCache,
-    );
+    const plan = await inspectFile(repository.repository, entry, configurationCache);
 
     if (plan.skipped !== undefined) {
       skipped[plan.skipped] += 1;
@@ -855,10 +748,7 @@ const trimDirectory = async (mode, directory) => {
 const main = async () => {
   const arguments_ = process.argv.slice(2);
 
-  if (
-    arguments_.length !== 2
-    || (arguments_[0] !== 'fix' && arguments_[0] !== 'check')
-  ) {
+  if (arguments_.length !== 2 || (arguments_[0] !== 'fix' && arguments_[0] !== 'check')) {
     throw new CliError(USAGE, 2);
   }
 
