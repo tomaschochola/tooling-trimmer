@@ -12,5 +12,6 @@
 
 import { PrettierConfigBuilder } from '@tomaschochola/tooling-prettier';
 
-// eslint-disable-next-line no-restricted-exports
-export default new PrettierConfigBuilder().toConfig();
+export default new PrettierConfigBuilder()
+  .addXmlPlugin()
+  .toConfig();
