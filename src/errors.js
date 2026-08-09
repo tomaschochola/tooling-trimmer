@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * @file
  * @author Tomáš Chochola <tomaschochola@tomaschochola.cz>
@@ -12,8 +10,9 @@
  * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
  */
 
-import process from 'node:process';
-
-import { runCommandLine } from './command-line.js';
-
-process.exitCode = await runCommandLine(process.argv.slice(2), process.stdout, process.stderr);
+export class TrimmerError extends Error {
+  constructor(message, exitCode = 1, options) {
+    super(message, options);
+    this.exitCode = exitCode;
+  }
+}

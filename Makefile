@@ -87,7 +87,7 @@ prettier_check: ./node_modules/.package-lock.json ./package.json ./package-lock.
 
 .PHONY: node_test
 node_test: ./node_modules/.package-lock.json ./package.json ./package-lock.json
-	node --test
+	node --test --experimental-test-coverage --test-coverage-branches=100 --test-coverage-functions=100 --test-coverage-include='src/**/*.js' --test-coverage-lines=100
 
 .PHONY: npm_audit
 npm_audit: ./node_modules/.package-lock.json ./package.json ./package-lock.json

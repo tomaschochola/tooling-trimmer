@@ -5,7 +5,7 @@
     "url": "https://github.com/tomaschochola"
   },
   "bin": {
-    "trimmer": "src/cli.js"
+    "tooling-trimmer": "src/cli.js"
   },
   "bugs": {
     "email": "tomaschochola@tomaschochola.cz",
