@@ -1,58 +1,58 @@
 {
-  "author": {
-    "email": "tomaschochola@tomaschochola.cz",
-    "name": "Tomáš Chochola",
-    "url": "https://github.com/tomaschochola"
-  },
-  "bin": {
-    "tooling-trimmer": "src/cli.js"
-  },
-  "bugs": {
-    "email": "tomaschochola@tomaschochola.cz",
-    "url": "https://github.com/tomaschochola/tooling-trimmer/issues"
-  },
-  "contributors": [
-    {
-      "email": "tomaschochola@tomaschochola.cz",
-      "name": "Tomáš Chochola",
-      "url": "https://github.com/tomaschochola"
-    }
-  ],
-  "dependencies": {
-    "editorconfig": "3.0.2"
-  },
-  "description": "Git-aware EditorConfig whitespace and line-ending normalizer.",
-  "devDependencies": {
-    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#main",
-    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#main"
-  },
-  "exports": {},
-  "files": [
-    "src"
-  ],
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/tomaschochola"
-  },
-  "homepage": "https://github.com/tomaschochola/tooling-trimmer",
-  "keywords": [
-    "tomaschochola",
-    "TomasChochola",
-    "Tomas Chochola",
-    "Tomáš Chochola",
-    "editorconfig",
-    "gitattributes",
-    "line-endings",
-    "trimmer",
-    "whitespace"
-  ],
-  "license": "CC-BY-ND-4.0",
-  "name": "@tomaschochola/tooling-trimmer",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tomaschochola/tooling-trimmer.git"
-  },
-  "type": "module",
-  "version": "0.0.0"
+    "author": {
+        "email": "tomaschochola@tomaschochola.cz",
+        "name": "Tomáš Chochola",
+        "url": "https://github.com/tomaschochola"
+    },
+    "bin": {
+        "tooling-trimmer": "src/cli.js"
+    },
+    "bugs": {
+        "email": "tomaschochola@tomaschochola.cz",
+        "url": "https://github.com/tomaschochola/tooling-trimmer/issues"
+    },
+    "contributors": [
+        {
+            "email": "tomaschochola@tomaschochola.cz",
+            "name": "Tomáš Chochola",
+            "url": "https://github.com/tomaschochola"
+        }
+    ],
+    "dependencies": {
+        "editorconfig": "3.0.2"
+    },
+    "description": "Git-aware EditorConfig whitespace and line-ending normalizer.",
+    "devDependencies": {
+        "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#main",
+        "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#main"
+    },
+    "exports": {},
+    "files": [
+        "src"
+    ],
+    "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/tomaschochola"
+    },
+    "homepage": "https://github.com/tomaschochola/tooling-trimmer",
+    "keywords": [
+        "tomaschochola",
+        "TomasChochola",
+        "Tomas Chochola",
+        "Tomáš Chochola",
+        "editorconfig",
+        "gitattributes",
+        "line-endings",
+        "trimmer",
+        "whitespace"
+    ],
+    "license": "CC-BY-ND-4.0",
+    "name": "@tomaschochola/tooling-trimmer",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tomaschochola/tooling-trimmer.git"
+    },
+    "type": "module",
+    "version": "0.0.0"
 }

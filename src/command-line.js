@@ -34,43 +34,43 @@ Exit status:
 `;
 
 function isHelpRequest(arguments_) {
-  if (arguments_.length === 1) {
-    return arguments_[0] === '--help' || arguments_[0] === '-h';
-  }
+    if (arguments_.length === 1) {
+        return arguments_[0] === '--help' || arguments_[0] === '-h';
+    }
 
-  return arguments_.length === 2 && (arguments_[0] === 'fix' || arguments_[0] === 'check') && (arguments_[1] === '--help' || arguments_[1] === '-h');
+    return arguments_.length === 2 && (arguments_[0] === 'fix' || arguments_[0] === 'check') && (arguments_[1] === '--help' || arguments_[1] === '-h');
 }
 
 function errorMessage(error) {
-  return error instanceof Error ? error.message : String(error);
+    return error instanceof Error ? error.message : String(error);
 }
 
 export async function runCommandLine(arguments_, standardOutput, standardError, operation = trimDirectory) {
-  try {
-    if (isHelpRequest(arguments_)) {
-      standardOutput.write(help);
+    try {
+        if (isHelpRequest(arguments_)) {
+            standardOutput.write(help);
 
-      return 0;
+            return 0;
+        }
+
+        if (arguments_.length !== 2 || (arguments_[0] !== 'fix' && arguments_[0] !== 'check')) {
+            throw new TrimmerError('Expected fix or check followed by exactly one directory.', 2);
+        }
+
+        if (arguments_[1] === '') {
+            throw new TrimmerError('DIRECTORY must not be empty.', 2);
+        }
+
+        const changes = await operation(arguments_[0], arguments_[1], standardOutput);
+
+        return arguments_[0] === 'check' && changes > 0 ? 1 : 0;
+    } catch (error) {
+        standardError.write(`tooling-trimmer: ${errorMessage(error)}\n`);
+
+        if (error instanceof TrimmerError && error.exitCode === 2) {
+            standardError.write(help);
+        }
+
+        return error instanceof TrimmerError ? error.exitCode : 1;
     }
-
-    if (arguments_.length !== 2 || (arguments_[0] !== 'fix' && arguments_[0] !== 'check')) {
-      throw new TrimmerError('Expected fix or check followed by exactly one directory.', 2);
-    }
-
-    if (arguments_[1] === '') {
-      throw new TrimmerError('DIRECTORY must not be empty.', 2);
-    }
-
-    const changes = await operation(arguments_[0], arguments_[1], standardOutput);
-
-    return arguments_[0] === 'check' && changes > 0 ? 1 : 0;
-  } catch (error) {
-    standardError.write(`tooling-trimmer: ${errorMessage(error)}\n`);
-
-    if (error instanceof TrimmerError && error.exitCode === 2) {
-      standardError.write(help);
-    }
-
-    return error instanceof TrimmerError ? error.exitCode : 1;
-  }
 }
