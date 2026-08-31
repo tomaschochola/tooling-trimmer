@@ -23,8 +23,8 @@
     },
     "description": "Git-aware EditorConfig whitespace and line-ending normalizer.",
     "devDependencies": {
-        "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#main",
-        "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#main"
+        "@tomaschochola/tooling-eslint": "git+https://github.com/tomaschochola/tooling-eslint.git#main",
+        "@tomaschochola/tooling-prettier": "git+https://github.com/tomaschochola/tooling-prettier.git#main"
     },
     "exports": {},
     "files": [
