@@ -32,11 +32,13 @@ test('compares every identity and mutation field in file snapshots', () => {
     const snapshot = {
         ctimeNs: 1n,
         dev: 2n,
+        gid: 8n,
         ino: 3n,
         mode: 4n,
         mtimeNs: 5n,
         nlink: 1n,
         size: 6n,
+        uid: 7n,
     };
 
     assert.equal(sameFile(snapshot, { ...snapshot }), true);

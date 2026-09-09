@@ -26,6 +26,8 @@ export function sameFile(left, right) {
         left.ino === right.ino &&
         left.mode === right.mode &&
         left.nlink === right.nlink &&
+        left.uid === right.uid &&
+        left.gid === right.gid &&
         left.size === right.size &&
         left.mtimeNs === right.mtimeNs &&
         left.ctimeNs === right.ctimeNs

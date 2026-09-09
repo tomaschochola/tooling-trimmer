@@ -19,6 +19,7 @@ export const help = `Usage:
 
 Normalize tracked and untracked, non-ignored text files in a Git worktree using EditorConfig and Git attributes.
 Files without an explicit or detectable charset must be valid UTF-8.
+EditorConfig settings take precedence; a conflicting Git end-of-line setting is an error.
 
 Commands:
   fix    Write required normalizations

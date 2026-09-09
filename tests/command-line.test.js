@@ -72,3 +72,7 @@ test('executable adapter exposes the finalized CLI contract', async () => {
     assert.equal(result.stdout, help);
     assert.equal(result.stderr, '');
 });
+
+test('documents the EditorConfig precedence in help', () => {
+    assert.match(help, /EditorConfig settings take precedence/u);
+});
