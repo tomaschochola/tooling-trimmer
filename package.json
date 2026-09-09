@@ -19,7 +19,7 @@
         }
     ],
     "dependencies": {
-        "editorconfig": "3.0.2"
+        "editorconfig": "^3.0.2"
     },
     "description": "Git-aware EditorConfig whitespace and line-ending normalizer.",
     "devDependencies": {
