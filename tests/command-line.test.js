@@ -39,7 +39,7 @@ test('rejects incomplete, excessive, unknown, and empty command lines', async ()
         assert.equal(exitCode, 2);
         assert.equal(standardOutput.text(), '');
         assert.match(standardError.text(), /^tooling-trimmer: /u);
-        assert.match(standardError.text(), /Usage:\n {2}tooling-trimmer fix DIRECTORY/u);
+        assert.match(standardError.text(), /Usage:\n {4}tooling-trimmer fix DIRECTORY/u);
     }
 });
 

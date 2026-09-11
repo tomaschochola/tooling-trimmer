@@ -14,24 +14,24 @@ import { TrimmerError } from './errors.js';
 import { trimDirectory } from './trimmer.js';
 
 export const help = `Usage:
-  tooling-trimmer fix DIRECTORY
-  tooling-trimmer check DIRECTORY
+    tooling-trimmer fix DIRECTORY
+    tooling-trimmer check DIRECTORY
 
 Normalize tracked and untracked, non-ignored text files in a Git worktree using EditorConfig and Git attributes.
 Files without an explicit or detectable charset must be valid UTF-8.
 EditorConfig settings take precedence; a conflicting Git end-of-line setting is an error.
 
 Commands:
-  fix    Write required normalizations
-  check  Report required normalizations without writing
+    fix    Write required normalizations
+    check  Report required normalizations without writing
 
 Options:
-  -h, --help  Show this help
+    -h, --help  Show this help
 
 Exit status:
-  0  Successful fix or clean check
-  1  Required changes or operational failure
-  2  Invalid command line
+    0  Successful fix or clean check
+    1  Required changes or operational failure
+    2  Invalid command line
 `;
 
 function isHelpRequest(arguments_) {
