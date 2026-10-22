@@ -40,11 +40,7 @@
         "TomasChochola",
         "Tomas Chochola",
         "Tomáš Chochola",
-        "editorconfig",
-        "gitattributes",
-        "line-endings",
-        "trimmer",
-        "whitespace"
+        "tooling-trimmer"
     ],
     "license": "CC-BY-ND-4.0",
     "name": "@tomaschochola/tooling-trimmer",
