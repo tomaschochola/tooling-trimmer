@@ -1,15 +1,3 @@
-/**
- * @file
- * @author Tomáš Chochola <tomaschochola@tomaschochola.cz>
- * @copyright © 2026 Tomáš Chochola <tomaschochola@tomaschochola.cz>
- *
- * @license CC-BY-ND-4.0
- *
- * @see {@link https://creativecommons.org/licenses/by-nd/4.0/} License
- * @see {@link https://github.com/tomaschochola} GitHub Profile
- * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
- */
-
 import { randomUUID } from 'node:crypto';
 import { chmod, lstat, open, readFile, rename, unlink } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
