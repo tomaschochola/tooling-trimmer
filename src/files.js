@@ -9,17 +9,7 @@ import { TrimmerError } from './errors.js';
 import { normalizeText } from './normalization.js';
 
 export function sameFile(left, right) {
-    return (
-        left.dev === right.dev &&
-        left.ino === right.ino &&
-        left.mode === right.mode &&
-        left.nlink === right.nlink &&
-        left.uid === right.uid &&
-        left.gid === right.gid &&
-        left.size === right.size &&
-        left.mtimeNs === right.mtimeNs &&
-        left.ctimeNs === right.ctimeNs
-    );
+    return left.dev === right.dev && left.ino === right.ino && left.mode === right.mode && left.nlink === right.nlink && left.uid === right.uid && left.gid === right.gid && left.size === right.size && left.mtimeNs === right.mtimeNs && left.ctimeNs === right.ctimeNs;
 }
 
 export function assertSameFile(expected, actual, message) {

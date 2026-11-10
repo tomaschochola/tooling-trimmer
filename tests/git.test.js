@@ -11,16 +11,7 @@ function records(...values) {
 }
 
 test('parses Git text attributes, binary detection, and arbitrary UTF-8 names', () => {
-    const entries = parseGitEntries(
-        records(
-            'i/lf    w/lf    attr/text eol=lf\ttext.txt',
-            'i/-text w/-text attr/-text\tbinary.dat',
-            'i/lf    w/-text  attr/\tdetected.bin',
-            'i/lf    w/-text  attr/text\tforced.txt',
-            'i/lf    w/lf    attr/\todd\tname\n.txt',
-            '',
-        ),
-    );
+    const entries = parseGitEntries(records('i/lf    w/lf    attr/text eol=lf\ttext.txt', 'i/-text w/-text attr/-text\tbinary.dat', 'i/lf    w/-text  attr/\tdetected.bin', 'i/lf    w/-text  attr/text\tforced.txt', 'i/lf    w/lf    attr/\todd\tname\n.txt', ''));
 
     assert.deepEqual(entries, [
         { binary: false, endOfLine: 'lf', file: 'text.txt' },

@@ -8,9 +8,7 @@ function formatTextFileCount(count) {
 function writeSummary(standardOutput, operation, plans, changedPlans, skipped) {
     const changedFileLabel = changedPlans.length === 1 ? 'file requires' : 'files require';
 
-    standardOutput.write(
-        `${operation} ${formatTextFileCount(plans.length)}; ${String(changedPlans.length)} ${changedFileLabel} changes; skipped ${String(skipped.binary)} binary, ${String(skipped['non-regular'])} non-regular, ${String(skipped.missing)} missing\n`,
-    );
+    standardOutput.write(`${operation} ${formatTextFileCount(plans.length)}; ${String(changedPlans.length)} ${changedFileLabel} changes; skipped ${String(skipped.binary)} binary, ${String(skipped['non-regular'])} non-regular, ${String(skipped.missing)} missing\n`);
 }
 
 function checkPlans(plans, changedPlans, skipped, standardOutput) {
@@ -43,9 +41,7 @@ async function fixPlans(plans, changedPlans, skipped, standardOutput) {
 
     const changedFileLabel = changedPlans.length === 1 ? 'file' : 'files';
 
-    standardOutput.write(
-        `processed ${formatTextFileCount(plans.length)}; changed ${String(changedPlans.length)} ${changedFileLabel}; skipped ${String(skipped.binary)} binary, ${String(skipped['non-regular'])} non-regular, ${String(skipped.missing)} missing\n`,
-    );
+    standardOutput.write(`processed ${formatTextFileCount(plans.length)}; changed ${String(changedPlans.length)} ${changedFileLabel}; skipped ${String(skipped.binary)} binary, ${String(skipped['non-regular'])} non-regular, ${String(skipped.missing)} missing\n`);
 }
 
 export async function trimDirectory(mode, directory, standardOutput) {
@@ -54,8 +50,8 @@ export async function trimDirectory(mode, directory, standardOutput) {
     const configurationCache = new Map();
     const plans = [];
     const skipped = {
-        binary: 0,
-        missing: 0,
+        'binary': 0,
+        'missing': 0,
         'non-regular': 0,
     };
 
